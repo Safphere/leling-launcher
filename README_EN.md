@@ -18,7 +18,7 @@
 ## 🛡 Silver Certification · A Proposal
 
 > **“Minors have anti-addiction systems. Senior citizens deserve the Silver Certification.”**
-> **Any app that dares to show ads to the elderly does not belong on your parents' phone.**
+> **A phone number needs real-name registration; a senior's phone needs Silver Certification — once certified, the entire device goes ad-free: every app, every page.**
 
 Silver Certification is an open social initiative — no organization, no certificates, no fees.
 **Zero ads** for seniors, no fake “×” buttons or scare tactics, big text and short flows —
