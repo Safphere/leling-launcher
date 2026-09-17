@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingStart="20dp"
+    android:paddingTop="28dp"
+    android:paddingEnd="20dp">
+
+    <!-- ===== 顶部：左实时大时钟 ｜ 右当日日期+农历 ===== -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextClock
+            android:id="@+id/lifeClock"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:autoSizeMaxTextSize="64sp"
+            android:autoSizeMinTextSize="38sp"
+            android:autoSizeTextType="uniform"
+            android:maxLines="1"
+            android:format12Hour="HH:mm"
+            android:format24Hour="HH:mm"
+            android:textColor="@color/text_main"
+            android:textSize="64sp"
+            android:textStyle="bold"
+            tools:text="09:41" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:gravity="end"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/lifeDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_main"
+                android:textSize="19sp"
+                android:textStyle="bold"
+                tools:text="9月7日 星期一" />
+
+            <TextView
+                android:id="@+id/lifeLunar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/orange"
+                android:textSize="15sp"
+                tools:text="农历七月廿六" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- ===== 天气卡（点击语音播报） ===== -->
+    <LinearLayout
+        android:id="@+id/weatherCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_card"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:padding="18dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/weatherEmoji"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="56sp"
+                tools:text="⛅" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/weatherTemp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_main"
+                    android:textSize="42sp"
+                    android:textStyle="bold"
+                    tools:text="23°C" />
+
+                <TextView
+                    android:id="@+id/weatherDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="21sp"
+                    tools:text="阴 · 20~30°" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔊 点我听天气"
+                android:textColor="#9E9E9E"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/weatherTip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textColor="@color/orange"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            tools:text="温度合适，出门走走吧" />
+
+        <!-- 三天预报（横排三列） -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/forecast0"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:lineSpacingMultiplier="1.15"
+                android:textColor="@color/text_main"
+                android:textSize="16sp"
+                tools:text="明天
+🌦️
+18~21°" />
+
+            <TextView
+                android:id="@+id/forecast1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:lineSpacingMultiplier="1.15"
+                android:textColor="@color/text_main"
+                android:textSize="16sp"
+                tools:text="后天
+☁️
+15~24°" />
+
+            <TextView
+                android:id="@+id/forecast2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:lineSpacingMultiplier="1.15"
+                android:textColor="@color/text_main"
+                android:textSize="16sp"
+                tools:text="09/10
+⛅
+15~28°" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/weatherMeta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="end"
+            android:textColor="#9E9E9E"
+            android:textSize="14sp"
+            tools:text="北京 · 更新于 10:23" />
+    </LinearLayout>
+
+    <!-- ===== 语音问答入口 ===== -->
+    <TextView
+        android:id="@+id/aiEntry"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_card"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:text="🎤 语音问答：有问题点我问"
+        android:textColor="@color/blue_dark"
+        android:textSize="19sp"
+        android:textStyle="bold" />
+
+    <!-- ===== 日历（在天气下面，点日期看详情） ===== -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btnPrevMonth"
+            android:layout_width="56dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:text="◀"
+            android:textColor="@color/blue"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/calTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/text_main"
+            android:textSize="19sp"
+            android:textStyle="bold"
+            tools:text="2026年9月" />
+
+        <TextView
+            android:id="@+id/btnNextMonth"
+            android:layout_width="56dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:text="▶"
+            android:textColor="@color/blue"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <!-- 日历主体：7行弹性均分剩余高度 -->
+    <LinearLayout
+        android:id="@+id/calRows"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical" />
+</LinearLayout>

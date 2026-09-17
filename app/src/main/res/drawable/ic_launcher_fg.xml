@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- 盾牌轮廓：守护 -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2.6"
+        android:strokeLineJoin="round"
+        android:pathData="M54,25.5 L75,32.8 V47.4 C75,62.8 66.1,72.1 54,77 C41.9,72.1 33,62.8 33,47.4 V32.8 Z" />
+    <!-- 白色爱心：为老人而做 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,69 C54,69 37.5,57.8 37.5,46.8 C37.5,39.4 43,34.5 49,34.5 C52.4,34.5 54.9,36.3 56,38.9 C57.1,36.3 59.6,34.5 63,34.5 C69,34.5 74.5,39.4 74.5,46.8 C74.5,57.8 54,69 54,69 Z" />
+    <!-- 金色对勾：认证 -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFE3A8"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M48.5,51.5 L52.5,55.5 L60.5,46.5" />
+</vector>

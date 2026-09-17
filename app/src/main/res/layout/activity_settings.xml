@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg">
+
+    <!-- ========== 设置内容（解锁后显示） ========== -->
+    <ScrollView
+        android:id="@+id/settingsContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/btnBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="52dp"
+                    android:gravity="center_vertical"
+                    android:text="← 返回桌面"
+                    android:textColor="@color/blue"
+                    android:textSize="18sp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_title"
+                    android:textColor="@color/text_main"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- ===== 联系人 ===== -->
+            <TextView style="@style/SecHeader" android:text="联系人" />
+            <TextView
+                android:id="@+id/rowAddContact"
+                style="@style/SettingRow"
+                android:text="＋ 添加联系人" />
+            <TextView
+                android:id="@+id/rowEmergency"
+                style="@style/SettingRow"
+                android:text="紧急联系人：未设置" />
+            <TextView
+                android:id="@+id/rowContactSize"
+                style="@style/SettingRow"
+                android:text="联系人大小：每行2个" />
+            <LinearLayout
+                android:id="@+id/contactRows"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <!-- ===== 常用应用 ===== -->
+            <TextView style="@style/SecHeader" android:text="常用应用（白名单）" />
+            <TextView
+                android:id="@+id/rowApps"
+                style="@style/SettingRow"
+                android:text="选择老人可以看到的应用" />
+            <LinearLayout style="@style/RowWrap">
+                <TextView
+                    style="@style/RowText"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="显示全部应用（选择性接管：关闭屏蔽）" />
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swShowAllApps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="64dp" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/rowAppSize"
+                style="@style/SettingRow"
+                android:text="应用图标大小：每行3个" />
+            <TextView
+                android:id="@+id/rowDock"
+                style="@style/SettingRow"
+                android:text="底部快捷栏（最多3个）" />
+
+            <!-- ===== SIM卡检测 ===== -->
+            <TextView style="@style/SecHeader" android:text="电话卡（SIM）检测" />
+            <LinearLayout style="@style/RowWrap">
+                <TextView
+                    style="@style/RowText"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="每天自动检测" />
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swSimCheck"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="64dp" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/rowSimTime"
+                style="@style/SettingRow"
+                android:text="检测时间：09:00" />
+
+            <!-- ===== 流量智能管理 ===== -->
+            <TextView style="@style/SecHeader" android:text="流量智能管理" />
+            <LinearLayout style="@style/RowWrap">
+                <TextView
+                    style="@style/RowText"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="每天自动查询并管控" />
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swFlow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="64dp" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/rowFlowCarrier"
+                style="@style/SettingRow"
+                android:text="运营商：中国移动" />
+            <TextView
+                android:id="@+id/rowFlowQuery"
+                style="@style/SettingRow"
+                android:text="查询短信：10086 发送 CXLL" />
+            <TextView
+                android:id="@+id/rowFlowThreshold"
+                style="@style/SettingRow"
+                android:text="剩余流量阈值：100MB" />
+            <TextView
+                android:id="@+id/rowFlowBillingDay"
+                style="@style/SettingRow"
+                android:text="月结日：每月1号" />
+            <TextView
+                android:id="@+id/rowFlowQueryNow"
+                style="@style/SettingRow"
+                android:text="立即查询流量" />
+            <TextView
+                android:id="@+id/rowFlowStatus"
+                style="@style/SettingRow"
+                android:text="状态：未查询" />
+
+            <!-- ===== 防沉迷 ===== -->
+            <TextView style="@style/SecHeader" android:text="防沉迷（应用使用限制）" />
+            <LinearLayout style="@style/RowWrap">
+                <TextView
+                    style="@style/RowText"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="开启防沉迷" />
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swGuard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="64dp" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/rowGuardRules"
+                style="@style/SettingRow"
+                android:text="管理应用限制（每天/每次/时段）" />
+            <TextView
+                android:id="@+id/rowGuardAccess"
+                style="@style/SettingRow"
+                android:text="使用情况访问：未授权（每日/每次限制需要）" />
+
+            <!-- ===== 健康提醒 ===== -->
+            <TextView style="@style/SecHeader" android:text="健康提醒（吃药/量血压/天气关怀）" />
+            <LinearLayout style="@style/RowWrap">
+                <TextView
+                    style="@style/RowText"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="开启提醒（全屏+语音播报）" />
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swReminder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="64dp" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/rowReminders"
+                style="@style/SettingRow"
+                android:text="管理提醒（定时+按天气）" />
+            <LinearLayout style="@style/RowWrap">
+                <TextView
+                    style="@style/RowText"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="夜间勿扰（提醒推迟到早上）" />
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swQuiet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="64dp" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/rowQuietStart"
+                style="@style/SettingRow"
+                android:text="勿扰开始：22:00" />
+            <TextView
+                android:id="@+id/rowQuietEnd"
+                style="@style/SettingRow"
+                android:text="勿扰结束：07:00" />
+            <TextView
+                android:id="@+id/rowExactAlarm"
+                style="@style/SettingRow"
+                android:text="提醒准点性：检查中" />
+
+            <!-- ===== 便捷页 ===== -->
+            <TextView style="@style/SecHeader" android:text="便捷页（手电筒/家庭地址）" />
+            <TextView
+                android:id="@+id/rowHomeAddress"
+                style="@style/SettingRow"
+                android:text="家庭地址（走失求助，大字卡+导航）" />
+
+            <!-- ===== 生活页 ===== -->
+            <TextView style="@style/SecHeader" android:text="生活页（时钟/天气/日历/壁纸）" />
+            <TextView
+                android:id="@+id/rowWallpaper"
+                style="@style/SettingRow"
+                android:text="自定义壁纸（从相册选一张）" />
+            <TextView
+                android:id="@+id/rowWallpaperReset"
+                style="@style/SettingRow"
+                android:text="恢复默认背景" />
+            <TextView
+                android:id="@+id/rowWeatherCity"
+                style="@style/SettingRow"
+                android:text="天气城市：北京" />
+
+            <!-- ===== AI问答 ===== -->
+            <TextView style="@style/SecHeader" android:text="AI 语音问答" />
+            <TextView
+                android:id="@+id/rowAiLang"
+                style="@style/SettingRow"
+                android:text="识别语言：普通话" />
+            <TextView
+                android:id="@+id/rowAiRead"
+                style="@style/SettingRow"
+                android:text="朗读回答：开" />
+            <TextView
+                android:id="@+id/rowAiUrl"
+                style="@style/SettingRow"
+                android:text="接口地址（baseUrl）" />
+            <TextView
+                android:id="@+id/rowAiModel"
+                style="@style/SettingRow"
+                android:text="模型：glm-5.3-flash" />
+            <TextView
+                android:id="@+id/rowAiKey"
+                style="@style/SettingRow"
+                android:text="API Key（未设置）" />
+            <TextView
+                android:id="@+id/rowAiTest"
+                style="@style/SettingRow"
+                android:text="测试 AI 连接" />
+
+            <!-- ===== 一键重启 ===== -->
+            <TextView style="@style/SecHeader" android:text="一键重启" />
+            <TextView
+                android:id="@+id/rowDoStatus"
+                style="@style/SettingRow"
+                android:text="设备管理员：未激活" />
+            <TextView
+                android:id="@+id/rowA11y"
+                style="@style/SettingRow"
+                android:text="开启无障碍服务（电源菜单重启）" />
+
+            <!-- ===== 通用 ===== -->
+            <TextView style="@style/SecHeader" android:text="通用" />
+            <LinearLayout style="@style/RowWrap">
+                <TextView
+                    style="@style/RowText"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="远程状态查询（子女发短信LLZT）" />
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swStatusSms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="64dp" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/rowSpeak"
+                style="@style/SettingRow"
+                android:text="操作语音播报：开" />
+            <TextView
+                android:id="@+id/rowPin"
+                style="@style/SettingRow"
+                android:text="修改 PIN 密码" />
+            <TextView
+                android:id="@+id/rowWizard"
+                style="@style/SettingRow"
+                android:text="重新运行配置向导" />
+            <TextView
+                android:id="@+id/rowExitLauncher"
+                style="@style/SettingRow"
+                android:text="换回系统默认桌面" />
+            <LinearLayout style="@style/RowWrap">
+                <TextView
+                    style="@style/RowText"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="紧急求助 SOS（桌面求助条）" />
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swSos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="64dp" />
+            </LinearLayout>
+            <LinearLayout style="@style/RowWrap">
+                <TextView
+                    style="@style/RowText"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="AI 语音问答（生活页入口）" />
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swAi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="64dp" />
+            </LinearLayout>
+            <LinearLayout style="@style/RowWrap">
+                <TextView
+                    style="@style/RowText"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="AI 悬浮球（需无障碍服务）" />
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swFloatingBall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="64dp" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/rowPermCheck"
+                style="@style/SettingRow"
+                android:text="权限自检与授权（小米必看）" />
+            <TextView
+                android:id="@+id/rowAbout"
+                style="@style/SettingRow"
+                android:text="关于乐龄桌面" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- ========== PIN 解锁 ========== -->
+    <LinearLayout
+        android:id="@+id/pinGate"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.8" />
+
+        <TextView
+            android:id="@+id/pinTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="请输入 PIN 密码"
+            android:textColor="@color/text_main"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/pinHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="默认密码 1234"
+            android:textColor="@color/text_secondary"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/pinDots"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:letterSpacing="0.5"
+            android:text="● ● ● ●"
+            android:textColor="@color/blue"
+            android:textSize="34sp"
+            android:textStyle="bold" />
+
+        <GridLayout
+            android:id="@+id/pinPad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:columnCount="3" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.5" />
+    </LinearLayout>
+</FrameLayout>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:orientation="vertical">
+
+    <!-- ================= 异常提醒条（只在有事时出现） ================= -->
+    <TextView
+        android:id="@+id/alertChip"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_btn_red"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:textSize="19sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:text="⚠️ 未检测到电话卡"
+        tools:visibility="gone" />
+
+    <!-- ================= 通话中：红色挂断条 ================= -->
+    <TextView
+        android:id="@+id/callChip"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_btn_red"
+        android:gravity="center"
+        android:text="📞 通话中 · 点这里挂断电话"
+        android:textColor="#FFFFFF"
+        android:textSize="19sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:visibility="gone" />
+
+    <!-- ================= 中部：三页内容 ================= -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- 页面指示点（本行同时是子女设置隐藏入口：连点5次） -->
+    <LinearLayout
+        android:id="@+id/dotsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
+
+        <View
+            android:id="@+id/dot0"
+            android:layout_width="26dp"
+            android:layout_height="12dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/pager_dot_on" />
+
+        <View
+            android:id="@+id/dot1"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/pager_dot_off" />
+
+        <View
+            android:id="@+id/dot2"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/pager_dot_off" />
+    </LinearLayout>
+
+    <!-- ================= 底部：应用快捷栏（子女可配） + 固定一键重启 ================= -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bg_dock"
+        android:orientation="horizontal"
+        android:paddingTop="9dp"
+        android:paddingBottom="9dp">
+
+        <LinearLayout
+            android:id="@+id/dockShortcuts"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="horizontal" />
+
+        <LinearLayout
+            android:id="@+id/btnReboot"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:background="@drawable/bg_circle_red"
+                android:gravity="center"
+                android:text="🔁"
+                android:textSize="22sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="@string/btn_reboot"
+                android:textColor="@color/red"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

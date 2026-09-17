@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:orientation="vertical">
+
+    <!-- 顶栏 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="56dp"
+            android:gravity="center_vertical"
+            android:text="← 返回"
+            android:textColor="@color/blue"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/smsTo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/text_main"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            tools:text="给儿子发短信" />
+
+        <TextView
+            android:layout_width="70dp"
+            android:layout_height="1dp" />
+    </LinearLayout>
+
+    <!-- 收件人显示 -->
+    <TextView
+        android:id="@+id/smsNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/text_secondary"
+        android:textSize="18sp"
+        tools:text="13800138000" />
+
+    <!-- 输入框（大字） -->
+    <EditText
+        android:id="@+id/editSms"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_card"
+        android:gravity="top|start"
+        android:hint="写下想说的内容…"
+        android:importantForAutofill="no"
+        android:inputType="textMultiLine|textCapSentences"
+        android:padding="16dp"
+        android:textSize="22sp" />
+
+    <!-- 快捷语（老人常用一句话，点击插入） -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="22dp"
+        android:paddingTop="10dp"
+        android:text="常用短语（点击填入）："
+        android:textColor="@color/text_secondary"
+        android:textSize="16sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/phraseList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        tools:itemCount="1" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- 发送 -->
+    <TextView
+        android:id="@+id/btnSendSms"
+        android:layout_width="match_parent"
+        android:layout_height="84dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_btn_orange"
+        android:gravity="center"
+        android:text="📨 发送短信"
+        android:textColor="#FFFFFF"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+</LinearLayout>

@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>乐龄桌面 · 银发认证 —— 未成年人有防沉迷，老年人也该有银发认证</title>
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<meta name="description" content="乐龄桌面 × 银发认证：为老年人设计的 Android 防广告桌面。零广告零信息流、大字大图标、子女远程可管。我们提议：未成年人有防沉迷，老年人也该有银发认证。开源免费。">
+<style>
+:root{
+  --ink:#16181D; --ink2:#3E4552; --paper:#F6F4EF;
+  --brand:#E8722A; --brand-dk:#C85A18;
+  --blue:#2C6FBF; --red:#D64541; --green:#2E8B57; --gold:#F2C94C;
+  --line:#E5DFD3;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  background:#0C0E13;color:#EDF0F5;overflow:hidden}
+
+/* ================= 全屏手机壳：页面即手机 ================= */
+#phone{position:fixed;inset:0;background:#F6F4EF;color:var(--ink);display:flex;flex-direction:column;
+  overflow:hidden;touch-action:pan-y}
+@media(min-width:900px){ /* 大屏时呈现为居中的大手机 */
+  body{background:#0C0E13;display:flex;align-items:center;justify-content:center}
+  #phone{position:fixed;left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);
+    width:430px;height:min(94vh,930px);border-radius:44px;
+    box-shadow:0 0 0 12px #17191F,0 0 0 14px #2A2E3A,0 40px 90px rgba(0,0,0,.6);
+    background:#F6F4EF}
+  #pcNote{position:fixed;left:34px;top:50%;transform:translateY(-50%);max-width:330px;
+    color:#8B93A5;font-size:15px;line-height:2;z-index:5}
+  #pcNote>b{color:#E8722A;display:block;font-size:22px;margin-bottom:10px;letter-spacing:2px}
+  #pcNote .brandRow{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+  #pcNote .brandRow b{margin:0}
+  #pcNote .steps{margin:14px 0 4px;border-left:3px solid rgba(232,114,42,.5);padding-left:12px}
+  #pcNote .steps div{margin:7px 0;line-height:1.7}
+  #pcNote .steps b{color:#F2C94C;display:inline;font-size:15px;letter-spacing:0;margin:0}
+  #pcNote .arrow{font-size:34px;color:#E8722A}
+  #pcCert{margin-top:22px;border:1.5px solid rgba(242,201,76,.55);border-radius:14px;
+    padding:14px 16px;cursor:pointer;color:#C9D2E0;line-height:1.9;
+    background:rgba(242,201,76,.07);transition:.2s}
+  #pcCert b{color:#F2C94C;display:inline;font-size:16px;letter-spacing:0;margin:0}
+  #pcCert span{color:#F2C94C;font-weight:700}
+  #pcCert:hover{background:rgba(242,201,76,.16);transform:translateX(4px)}
+}
+
+/* 状态栏 */
+#statusbar{height:38px;background:#11141A;color:#E8ECF2;display:flex;align-items:center;
+  padding:0 18px;font-size:13.5px;gap:8px;z-index:60;position:relative;flex:none}
+#statusbar .spacer{flex:1}
+#sbShield{color:var(--gold);font-weight:700}
+#sbBlocked{background:rgba(242,201,76,.15);border-radius:10px;padding:1px 8px;color:var(--gold)}
+
+/* 屏幕舞台 */
+#stage{flex:1;position:relative;overflow:hidden;background:var(--paper)}
+.layer{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;
+  transform:translateX(100%);transition:transform .38s cubic-bezier(.32,.72,.28,1);
+  -webkit-overflow-scrolling:touch}
+.layer.on{transform:none;z-index:10}
+.layer.left{transform:translateX(-24%)}
+
+/* ================= 广告地狱层 ================= */
+#layer-chaos{background:#EFEDEA;padding-top:52px}
+.chaos-bar{height:46px;background:#8B1E1E;color:#FFD7D7;display:flex;align-items:center;
+  justify-content:center;font-size:13px;letter-spacing:1px}
+.chaos-apps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:22px 16px}
+.chaos-apps .ca{text-align:center;font-size:11.5px;color:#666}
+.chaos-apps .ca .ic{width:54px;height:54px;border-radius:14px;margin:0 auto 5px;
+  display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.chaos-apps .ca small{display:block;color:#B8443F;font-weight:700}
+.adn{position:absolute;left:8px;right:8px;background:#fff;border-radius:10px;
+  padding:10px 40px 10px 12px;display:flex;gap:9px;align-items:center;
+  box-shadow:0 5px 16px rgba(0,0,0,.28);animation:slidein .32s ease;z-index:40;
+  border:1px solid #E3E3E3}
+.adn .ic{width:34px;height:34px;border-radius:8px;flex:none;display:flex;
+  align-items:center;justify-content:center;font-size:19px;color:#fff}
+.adn b{font-size:13px;display:block}
+.adn span{color:#888;font-size:11.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adn .x{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:27px;height:27px;
+  border:none;background:#ECECEC;color:#AAA;font-size:13px;border-radius:50%;cursor:pointer}
+.adn .x:hover{background:#C0392B;color:#fff}
+.fullad{position:absolute;inset:0;background:#fff;z-index:60;display:flex;flex-direction:column;
+  align-items:center;padding:30px 20px;text-align:center;animation:pop .3s ease}
+.fullad .big{font-size:54px;margin-bottom:4px}
+.fullad h4{font-size:20px;color:#C0392B;margin-bottom:6px}
+.fullad p{font-size:13px;color:#777;margin-bottom:18px}
+.fullad .dl{background:#C0392B;color:#fff;border:none;padding:11px 34px;font-size:15px;
+  border-radius:22px;font-weight:700;margin-bottom:20px}
+.fakebox{position:relative;width:36px;height:36px;border:2px solid #BBB;border-radius:50%;
+  background:#fff;color:#999;font-size:15px;cursor:pointer;transition:.22s}
+.fakebox:hover{transform:translate(30px,-46px) scale(1.4);background:#C0392B;color:#fff;border:none}
+.redenv{position:absolute;width:66px;height:92px;background:linear-gradient(#E5484D,#B03028);
+  border-radius:10px 10px 4px 4px;cursor:pointer;z-index:45;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;color:#FFE9A8;font-size:11px;font-weight:700;
+  box-shadow:0 5px 14px rgba(0,0,0,.35);animation:drop .5s ease}
+.redenv .gold{width:36px;height:20px;background:#FFD97A;border-radius:4px;margin-bottom:4px;
+  display:flex;align-items:center;justify-content:center;color:#B03028}
+@keyframes slidein{from{transform:translateY(-34px);opacity:0}to{transform:none;opacity:1}}
+@keyframes pop{from{transform:scale(.72);opacity:0}to{transform:none;opacity:1}}
+@keyframes drop{from{transform:translateY(-140px)}to{transform:none}}
+
+/* 清场按钮 */
+#fedUp{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);z-index:50;
+  white-space:nowrap;background:var(--ink);color:#fff;border:2px solid var(--gold);
+  font-size:17.5px;padding:14px 26px;border-radius:14px;cursor:pointer;display:none;
+  animation:rise .5s ease}
+@keyframes rise{from{transform:translate(-50%,30px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+#fedUp{animation:rise .5s ease,pulse 1.6s 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(242,201,76,.55)}50%{box-shadow:0 0 0 16px rgba(242,201,76,0)}}
+#chaosHint{position:absolute;left:10px;right:10px;top:44px;z-index:50;display:none;
+  background:#10131A;color:#C9D2E0;border:1px solid rgba(242,201,76,.4);border-radius:12px;
+  padding:9px 14px;font-size:13px;line-height:1.7;text-align:center}
+#chaosHint b{color:#F2C94C}
+@media(min-width:900px){#chaosHint{display:none}}
+
+/* 广告计数徽章（广告地狱期间悬浮于舞台左上） */
+#adCounter{position:absolute;left:10px;top:10px;z-index:55;background:rgba(16,19,26,.62);
+  color:#fff;font-size:12px;padding:4px 12px;border-radius:99px;pointer-events:none}
+
+/* 底部导航 Dock */
+#dock{position:absolute;left:0;right:0;bottom:0;height:74px;z-index:40;
+  background:rgba(255,255,255,.96);border-top:1.5px solid var(--line);
+  display:flex;backdrop-filter:blur(6px)}
+#dock .di{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;font-size:12.5px;color:var(--ink2);cursor:pointer;user-select:none}
+#dock .di .dico{width:22px;height:22px;display:block}
+#dock .di.on{color:var(--brand);font-weight:700}
+
+/* 桌面常驻倡议徽章（守护态标识，非弹窗） */
+.certChip svg{vertical-align:-3px;margin-right:6px}
+.certChip{display:inline-block;margin-top:16px;border:1.5px solid var(--gold);border-radius:99px;
+  padding:8px 18px;font-size:13.5px;font-weight:700;color:#7A5C12;background:rgba(242,201,76,.2);cursor:pointer}
+.certChip:hover{background:rgba(242,201,76,.35)}
+
+/* 守护横幅（清场后周期性出现） */
+#guardBanner{position:absolute;left:10px;right:10px;top:12px;z-index:45;display:none;align-items:center;gap:10px;
+  background:#10131A;color:#EDF0F5;border:1.5px solid var(--gold);border-radius:14px;
+  padding:12px 16px;font-size:13.5px}
+#guardBanner .em{font-size:20px}
+
+/* 倡议横幅 */
+#guideBanner{position:absolute;left:10px;right:10px;top:12px;z-index:45;display:none;
+  background:#12321F;color:#D6F0DD;border:1.5px solid #2E8B57;border-radius:14px;
+  padding:12px 16px;font-size:13.5px;line-height:1.8;animation:drop .5s ease}
+#guideBanner b{color:#8BE29B}
+#guideBanner .g{display:block;color:#BCE8C8;font-size:12.5px;margin-top:4px}
+/* ================= 清场动画 ================= */
+#shieldSweep{position:absolute;inset:0;z-index:80;display:none;align-items:center;
+  justify-content:center;flex-direction:column;background:rgba(12,14,19,.55);
+  backdrop-filter:blur(3px)}
+#shieldSweep .shield{width:130px;height:130px;animation:shieldin .9s cubic-bezier(.2,.8,.3,1) forwards}
+@keyframes shieldin{from{transform:scale(3) rotate(-18deg);opacity:0}to{transform:none;opacity:1}}
+#shieldSweep p{color:var(--gold);font-size:22px;font-weight:800;letter-spacing:2px;margin-top:20px;
+  opacity:0;animation:rise .5s .7s forwards}
+#shieldSweep small{color:#C9CFDA;font-size:14px;margin-top:6px;opacity:0;
+  animation:rise .5s 1s forwards}
+#blockCount{color:#fff;font-size:15px;margin-top:4px;opacity:0;animation:rise .5s 1.2s forwards}
+
+/* ================= 清净桌面（导航） ================= */
+#layer-home{background:linear-gradient(180deg,#FDFBF7 0%,#F3EEE4 100%)}
+.hometime{padding:64px 26px 8px;text-align:center}
+.hometime .t{font-size:58px;font-weight:800;letter-spacing:2px;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+.hometime .d{font-size:16px;color:var(--ink2);margin-top:2px}
+.hometime .slogan{margin-top:10px;font-size:15px;color:var(--brand-dk);font-weight:600}
+.appgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;padding:26px 24px 110px}
+.appicon{background:#fff;border-radius:22px;padding:26px 12px 20px;text-align:center;
+  cursor:pointer;border:1.5px solid var(--line);transition:.2s;user-select:none}
+.appicon:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(31,36,48,.12);border-color:var(--brand)}
+.appicon:active{transform:scale(.96)}
+.appicon .ic{font-size:44px;line-height:1}
+.appicon .ic svg{display:block;margin:0 auto}
+.appicon .nm{font-size:19px;font-weight:800;margin-top:10px;letter-spacing:2px}
+.appicon .sub{font-size:12.5px;color:var(--ink2);margin-top:3px}
+.appicon .dot{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--red);
+  transform:translate(30px,-44px)}
+
+/* ================= 通用 app 内页 ================= */
+.app-page{background:var(--paper);padding:0 0 104px}
+.app-head{position:sticky;top:0;z-index:5;background:var(--paper);
+  display:flex;align-items:center;gap:12px;padding:52px 22px 14px}
+.app-head .back{width:44px;height:44px;border-radius:50%;background:#fff;
+  border:1.5px solid var(--line);font-size:21px;cursor:pointer;color:var(--ink);
+  display:flex;align-items:center;justify-content:center;flex:none}
+.app-head h1{font-size:24px;letter-spacing:1px}
+.app-body{padding:6px 22px 40px}
+.bigtext{font-size:19px;line-height:1.9;color:var(--ink2)}
+.bigtext b{color:var(--ink)}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:22px;
+  margin:16px 0}
+.card h3{font-size:19px;margin-bottom:8px}
+.card p{font-size:16.5px;line-height:1.85;color:var(--ink2)}
+.card .em{font-size:36px}
+.shot{width:100%;border-radius:16px;border:6px solid #111;margin:14px 0;display:block}
+.quote{border-left:4px solid var(--brand);padding:8px 16px;background:#fff;
+  border-radius:0 12px 12px 0;margin:14px 0;font-size:17px}
+.cta2{display:block;width:100%;text-align:center;background:var(--brand);color:#fff;
+  border:none;border-radius:14px;padding:15px;font-size:18px;font-weight:700;
+  cursor:pointer;margin:18px 0;text-decoration:none}
+.cta2:active{transform:scale(.98)}
+
+/* app1 故事 */
+.timeline{margin:18px 0}
+.tl{display:flex;gap:14px;margin-bottom:16px}
+.tl .tm{flex:none;width:52px;text-align:center;font-size:12.5px;color:var(--ink2);padding-top:4px}
+.tl .tx{flex:1;font-size:16.5px;line-height:1.8}
+
+/* app2 功能清单 */
+.frow{display:flex;gap:16px;align-items:flex-start;background:#fff;border:1.5px solid var(--line);
+  border-radius:16px;padding:18px;margin-bottom:14px}
+.frow .em{font-size:32px;flex:none}
+.frow h3{font-size:18px;margin-bottom:4px}
+.frow p{font-size:15.5px;line-height:1.8;color:var(--ink2)}
+
+/* app3 演示：勿扰 + 白名单 + LLZT */
+.demo-h{font-size:18px;font-weight:800;margin:22px 0 10px}
+.demo-h:first-child{margin-top:0}
+.night-demo{background:#10131A;border-radius:16px;padding:20px;color:#C9D2E0}
+.night-demo .row{display:flex;align-items:center;gap:12px;padding:12px 4px;font-size:16px}
+.night-demo .sw{width:52px;height:28px;border-radius:14px;background:#3A4150;position:relative;
+  cursor:pointer;transition:.25s;flex:none}
+.night-demo .sw:after{content:"";position:absolute;width:22px;height:22px;border-radius:50%;
+  background:#8B93A5;top:3px;left:3px;transition:.25s}
+.night-demo .sw.on{background:var(--green)}
+.night-demo .sw.on:after{left:27px;background:#fff}
+#ndStatus{font-size:15px;line-height:1.8;color:#9FB2CC;margin-top:8px;min-height:52px}
+#ndStatus b{color:var(--gold)}
+.chat2{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+.b2{max-width:88%;padding:10px 13px;border-radius:13px;font-size:15px;line-height:1.7;
+  white-space:pre-wrap}
+.b2.in{background:#fff;align-self:flex-start;border-bottom-left-radius:4px}
+.b2.out{background:#95C46B;align-self:flex-end;border-bottom-right-radius:4px}
+.replay{background:none;border:1.5px solid var(--ink2);color:var(--ink2);border-radius:10px;
+  padding:8px 18px;font-size:14.5px;cursor:pointer}
+
+/* app4 隐藏app演示 */
+.hidegrid{display:grid;grid-template-columns:repeat(4,66px);gap:14px;justify-content:center}
+.hidegrid .app{width:66px;text-align:center;font-size:11.5px;color:var(--ink2);cursor:pointer;transition:.3s}
+.hidegrid .app .ic{width:56px;height:56px;border-radius:14px;background:var(--paper);
+  border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:28px;margin:0 auto 4px;transition:.3s}
+.hidegrid .app.hidden{opacity:.18;filter:grayscale(1);transform:scale(.9)}
+.hidegrid .app.hidden .ic{background:#DDD}
+.hint-c{text-align:center;color:var(--ink2);font-size:15px;margin-top:16px;min-height:24px}
+
+/* app5 设置/隐私 */
+.privrow{display:flex;gap:14px;align-items:center;background:#fff;border:1.5px solid var(--line);
+  border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.privrow .em{font-size:26px;flex:none}
+.privrow b{font-size:16.5px}
+.privrow p{font-size:14px;color:var(--ink2)}
+
+/* 截图墙 */
+.wall{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:20px;margin-top:36px}
+.wall figure{margin:0}
+.wall img{width:100%;border-radius:18px;border:6px solid #111;box-shadow:var(--shadow);display:block}
+.wall figcaption{text-align:center;font-size:15.5px;margin-top:9px;color:var(--ink2)}
+
+/* 隐私徽章墙 */
+.priv{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:18px;margin-top:34px}
+.pv{background:#0E1420;color:#DCE6F5;border-radius:16px;padding:22px;text-align:center}
+.pv .b{font-size:13px;letter-spacing:3px;color:#7FB2FF;border:1.5px solid #7FB2FF;
+  border-radius:20px;display:inline-block;padding:2px 14px;margin-bottom:12px}
+.pv h4{font-size:19px;margin-bottom:6px;color:#fff}
+.pv p{font-size:14px;opacity:.75}
+
+/* 页脚 */
+footer{background:var(--ink);color:#B8BFCB;padding:46px 0 34px;text-align:center;font-size:15px}
+footer .fine{font-size:13.5px;opacity:.65;margin-top:14px;line-height:1.9}
+footer a{color:#FFD97A}
+@media(max-width:760px){
+  .hero h1{font-size:36px}
+  .duo{gap:30px}
+  .demo-box{padding:22px}
+}
+
+/* ===== 功能全景 ===== */
+.tourTabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tourTabs .tt{border:1.5px solid var(--line);background:#F6F3EC;border-radius:10px;padding:9px 0;
+  font-size:14px;font-weight:700;color:var(--ink2);cursor:pointer}
+.tourTabs .tt.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.featGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 4px}
+.fi{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:13px 12px}
+.fi svg{display:block;margin-bottom:8px}
+.fi b{display:block;font-size:15.5px;margin-bottom:3px}
+.fi span{font-size:12.5px;color:var(--ink2);line-height:1.6}
+
+/* ===== SVG 演示动效 ===== */
+.svg-demo svg{display:block;margin:0 auto}
+.svg-demo .flow{stroke-dasharray:280;stroke-dashoffset:280}
+.svg-demo.inview .flow{animation:flowdraw 1.8s .2s ease forwards}
+@keyframes flowdraw{to{stroke-dashoffset:0}}
+.svg-demo .nd{opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s ease}
+.svg-demo.inview .nd{opacity:1;transform:none}
+.svg-demo.inview .n1{transition-delay:.3s}
+.svg-demo.inview .n2{transition-delay:.75s}
+.svg-demo.inview .n3{transition-delay:1.2s}
+.svg-demo.inview .n4{transition-delay:1.65s}
+.certHero .heroGlow{transform-box:fill-box;transform-origin:center;animation:heroGlow 2.6s ease-in-out infinite}
+@keyframes heroGlow{0%,100%{transform:scale(.92);opacity:.45}50%{transform:scale(1.06);opacity:.95}}
+.certHero .heroShield{transform-box:fill-box;transform-origin:center;animation:heroFloat 3s ease-in-out infinite}
+@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.certHero .adA{opacity:0}
+.certHero .a1{animation:hitR 3.2s .2s infinite}
+.certHero .a2{animation:hitR 3.2s 1s infinite}
+.certHero .a3{animation:hitR 3.2s 1.8s infinite}
+.certHero .a4{animation:hitL 3.2s 1.4s infinite}
+@keyframes hitR{0%{transform:translate(64px,-6px);opacity:0}14%{opacity:1}46%{transform:translate(4px,0);opacity:1}62%{transform:translate(-14px,24px) rotate(46deg);opacity:0}100%{transform:translate(-14px,24px) rotate(46deg);opacity:0}}
+@keyframes hitL{0%{transform:translate(-18px,-6px);opacity:0}14%{opacity:1}46%{transform:translate(56px,0);opacity:1}62%{transform:translate(66px,22px) rotate(-46deg);opacity:0}100%{transform:translate(66px,22px) rotate(-46deg);opacity:0}}
+@media(prefers-reduced-motion:reduce){
+  .certHero .adA,.certHero .heroGlow,.certHero .heroShield{animation:none}
+  .certHero .adA{opacity:.9}
+  .svg-demo .flow{stroke-dashoffset:0}
+  .svg-demo .nd{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="lgBrand" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FB8C00"/><stop offset="1" stop-color="#E05A12"/>
+    </linearGradient>
+    <symbol id="i-logo" viewBox="0 0 48 48">
+      <rect x="2" y="2" width="44" height="44" rx="11" fill="url(#lgBrand)"/>
+      <path d="M24 9.5 l11 3.8 v8.2 c0 8.2 -4.7 13.2 -11 15.9 C17.7 34.7 13 29.7 13 21.5 v-8.2 z" fill="#fff"/>
+      <path d="M24 32.5 c-5.5 -4 -8.8 -7.2 -8.8 -10.4 0 -2.3 1.8 -4 4 -4 1.9 0 3.9 1.2 4.8 3 .9 -1.8 2.9 -3 4.8 -3 2.2 0 4 1.7 4 4 0 3.2 -3.3 6.4 -8.8 10.4 z" fill="#E8722A"/>
+    </symbol>
+    <symbol id="i-home" viewBox="0 0 24 24">
+      <path d="M4 11.5 L12 4.5 l8 7 v7.5 a1.5 1.5 0 0 1 -1.5 1.5 h-13 A1.5 1.5 0 0 1 4 19 z" fill="#E8722A"/>
+      <rect x="10" y="14" width="4" height="6.5" rx="0.8" fill="#fff" opacity=".92"/>
+    </symbol>
+    <symbol id="i-story" viewBox="0 0 24 24">
+      <path d="M12 5.5 C10 3.8 7 3.4 4 3.8 V19 c3 -.4 6 0 8 1.7 2 -1.7 5 -2.1 8 -1.7 V3.8 c-3 -.4 -6 0 -8 1.7 z" fill="#E8722A"/>
+      <path d="M12 5.5 V20.7" stroke="#fff" stroke-width="1.4"/>
+      <path d="M6 8 h3.2 M6 11 h3.2 M14.8 8 H18 M14.8 11 H18" stroke="#fff" stroke-width="1.2" opacity=".85"/>
+    </symbol>
+    <symbol id="i-guard" viewBox="0 0 24 24">
+      <path d="M12 2.5 l7.5 2.6 v5.6 c0 5.6 -3.2 9 -7.5 10.8 C7.7 19.7 4.5 16.3 4.5 10.7 V5.1 z" fill="#2E8B57"/>
+      <path d="M12 7.2 v5.6 M9.2 10 h5.6" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-pill" viewBox="0 0 24 24">
+      <g transform="rotate(-35 12 12)">
+        <rect x="3.2" y="9" width="17.6" height="6.2" rx="3.1" fill="#D64541"/>
+        <path d="M12 9 h4.5 a3.1 3.1 0 0 1 0 6.2 H12 z" fill="#fff" opacity=".93"/>
+      </g>
+    </symbol>
+    <symbol id="i-bubble" viewBox="0 0 24 24">
+      <path d="M4 4.5 h16 v11 H10 L5.5 19.5 V15.5 H4 z" fill="#2C6FBF"/>
+      <path d="M8 8.6 h8 M8 11.4 h5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M17.8 7.6 c-1.1 -.85 -1.7 -1.5 -1.7 -2.15 0 -.65 .55 -1.1 1.1 -1.1 .28 0 .47 .1 .6 .28 .13 -.18 .32 -.28 .6 -.28 .55 0 1.1 .45 1.1 1.1 0 .65 -.6 1.3 -1.7 2.15 z" fill="#E8722A" stroke="#F6F3EC" stroke-width=".4"/>
+    </symbol>
+    <symbol id="i-photo" viewBox="0 0 24 24">
+      <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" fill="#F2C94C"/>
+      <circle cx="9" cy="9.5" r="1.8" fill="#fff"/>
+      <path d="M6 17 l4.5 -5 3.5 4 2.5 -2.5 3 3.5" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-tools" viewBox="0 0 24 24">
+      <path d="M20.5 6.5 a5 5 0 0 1 -6.6 6.1 L7 19.5 a2 2 0 0 1 -2.8 -2.8 l6.9 -6.9 A5 5 0 0 1 17.3 3.4 l-3 3 .9 2.4 2.4 .9 z" fill="#4A5160"/>
+    </symbol>
+    <symbol id="i-cert" viewBox="0 0 24 24">
+      <path d="M12 2.5 l7.5 2.6 v5.6 c0 5.6 -3.2 9 -7.5 10.8 C7.7 19.7 4.5 16.3 4.5 10.7 V5.1 z" fill="#F2C94C"/>
+      <path d="M9 11.5 l2.2 2.2 4 -4.4" stroke="#10131A" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-tour" viewBox="0 0 24 24">
+      <rect x="7" y="2.5" width="10" height="19" rx="2.5" fill="#2C6FBF"/>
+      <rect x="8.5" y="4.5" width="7" height="13" rx="1" fill="#fff" opacity=".93"/>
+      <circle cx="12" cy="19.4" r="1.1" fill="#fff"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="pcNote">
+  <div class="brandRow"><svg width="36" height="36"><use href="#i-logo"/></svg><b>乐龄桌面</b></div>
+  左边这台手机，正在重演老人<br>被广告围猎的日常。
+  <div class="steps">
+    <div>① <b>看</b>：弹窗轰炸正在进行</div>
+    <div>② <b>点</b>：手机里的「受够了吗」一键清场</div>
+    <div>③ <b>逛</b>：清净桌面随便点，底部可换页</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="certnote" id="pcCert" role="button">🛡 <b>银发认证 · 一个提议</b><br>
+    未成年人有防沉迷，老年人也该有银发认证。<span>点此了解 →</span></div>
+</div>
+
+<div id="phone">
+
+  <!-- 状态栏 -->
+  <div id="statusbar">
+    <span id="sbClock">9:41</span>
+    <span id="sbShield">🛡 银发认证</span>
+    <span class="spacer"></span>
+    <span id="sbBlocked">已拦截 0 条</span>
+    <span>📶</span><span>🔋</span>
+  </div>
+
+  <!-- 舞台：所有屏幕层叠于此 -->
+  <div id="stage">
+    <div id="chaosHint">📺 正在重演：<b>老人手机里的广告轰炸</b>——稍后点底部「受够了吗」一键清场</div>
+
+    <!-- ===== 层：广告地狱（开场） ===== -->
+    <div class="layer on" id="layer-chaos">
+      <div class="chaos-bar">⚠ 该设备已安装 41 个应用，其中 33 个非机主安装</div>
+      <div class="chaos-apps">
+        <div class="ca"><div class="ic" style="background:#4A90E2">🧹</div>清理大师<small>弹窗×</small></div>
+        <div class="ca"><div class="ic" style="background:#E5484D">🧧</div>红包助手<small>弹窗×</small></div>
+        <div class="ca"><div class="ic" style="background:#F5A623">📰</div>热点快报<small>弹窗×</small></div>
+        <div class="ca"><div class="ic" style="background:#7ED321">🔑</div>WiFi钥匙<small>弹窗×</small></div>
+        <div class="ca"><div class="ic" style="background:#9013FE">🎰</div>欢乐城<small>弹窗×</small></div>
+        <div class="ca"><div class="ic" style="background:#50E3C2">🔋</div>电池医生<small>弹窗×</small></div>
+        <div class="ca"><div class="ic" style="background:#FF5A79">❤️</div>同城交友<small>弹窗×</small></div>
+        <div class="ca"><div class="ic" style="background:#4A90E2">📶</div>加速球<small>弹窗×</small></div>
+      </div>
+      <div style="text-align:center;padding:4px 20px 10px;color:#98938A;font-size:13.5px">
+        ↑ 这还只是桌面上看得见的。看不见的，正在弹。
+      </div>
+      <button id="fedUp"> 受够了吗？点我，还手机一份清净 →</button>
+    </div>
+
+    <!-- ===== 清场动画 ===== -->
+    <div id="shieldSweep">
+      <svg class="shield" viewBox="0 0 48 48" fill="none">
+        <path d="M24 3 7 9.5V24c0 10.5 7.2 18.3 17 20.7C33.8 42.3 41 34.5 41 24V9.5L24 3z"
+          fill="#10131A" stroke="#F2C94C" stroke-width="2.5"/>
+        <path d="M24 12c-5.2 0-8.4 3.6-8.4 7.8 0 5.7 8.4 12.2 8.4 12.2s8.4-6.5 8.4-12.2c0-4.2-3.2-7.8-8.4-7.8z"
+          fill="#F2C94C"/>
+        <circle cx="24" cy="19.6" r="3.6" fill="#10131A"/>
+      </svg>
+      <p>银发认证 · 清场完成</p>
+      <div id="blockCount">已拦截广告弹窗 0 条</div>
+      <small>从此以后，这台手机只属于它真正的主人</small>
+    </div>
+
+    <!-- ===== 层：清净桌面（导航） ===== -->
+    <div class="layer" id="layer-home">
+      <div class="hometime">
+        <div class="t" id="hmClock">09:41</div>
+        <div class="d" id="hmDate">9月15日 星期二 · 农历八月初五</div>
+        <div class="slogan">手机很清净，爸妈很安心</div>
+        <div class="certChip" data-go="app-cert"><svg width="16" height="16"><use href="#i-cert"/></svg>银发认证 · 一个提议</div>
+      </div>
+      <div class="appgrid">
+        <div class="appicon" data-go="app-tour"><div class="ic"><svg width="42" height="42"><use href="#i-tour"/></svg></div><div class="nm">全 景</div><div class="sub">效果·功能一览</div></div>
+        <div class="appicon" data-go="app-story"><div class="ic"><svg width="42" height="42"><use href="#i-story"/></svg></div><div class="nm">故 事</div><div class="sub">为什么做它</div></div>
+        <div class="appicon" data-go="app-feat"><div class="ic"><svg width="42" height="42"><use href="#i-guard"/></svg></div><div class="nm">护 身</div><div class="sub">防广告·防诈骗</div><div class="dot"></div></div>
+        <div class="appicon" data-go="app-care"><div class="ic"><svg width="42" height="42"><use href="#i-pill"/></svg></div><div class="nm">安 心</div><div class="sub">提醒·勿扰·守护</div></div>
+        <div class="appicon" data-go="app-llzt"><div class="ic"><svg width="42" height="42"><use href="#i-bubble"/></svg></div><div class="nm">报平安</div><div class="sub">LLZT 一条短信</div></div>
+        <div class="appicon" data-go="app-shots"><div class="ic"><svg width="42" height="42"><use href="#i-photo"/></svg></div><div class="nm">看 一 看</div><div class="sub">真机实拍</div></div>
+        <div class="appicon" data-go="app-tools"><div class="ic"><svg width="42" height="42"><use href="#i-tools"/></svg></div><div class="nm">工具 箱</div><div class="sub">下载·构建·开源</div></div>
+      </div>
+    </div>
+
+    <!-- ===== App：功能全景（效果+功能一览） ===== -->
+    <div class="layer app-page" id="app-tour">
+      <div class="app-head"><button class="back" data-back>←</button><h1>全景 · 效果与功能</h1></div>
+      <div class="app-body">
+        <p class="bigtext">真实效果：桌面就<b>三页 + 一个便捷页</b>，没有第四屏，没有藏在角落的东西。</p>
+        <div class="card" style="padding:14px">
+          <div class="tourTabs">
+            <button class="tt on" data-shot="screens/01_home_contacts.png" data-cap="联系人页：大头像，点一下直接拨号">联系人</button>
+            <button class="tt" data-shot="screens/02_home_life.png" data-cap="生活页：时钟 / 天气 / 农历 / 月历">生活</button>
+            <button class="tt" data-shot="screens/03_home_apps.png" data-cap="应用页：白名单大图标 + 搜索">应用</button>
+            <button class="tt" data-shot="screens/04_tools.png" data-cap="便捷页：手电筒 / 家庭地址卡">便捷</button>
+          </div>
+          <img id="tourImg" src="screens/01_home_contacts.png" alt="真机截图" style="width:100%;border-radius:12px;border:5px solid #111;display:block;margin-top:10px">
+          <p id="tourCap" style="text-align:center;font-size:14.5px;color:var(--ink2);margin-top:8px">联系人页：大头像，点一下直接拨号</p>
+        </div>
+        <p class="bigtext" style="margin-top:6px"><b>八大功能，都是老人每天用得上的：</b></p>
+        <div class="featGrid">
+          <div class="fi"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="var(--brand)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h5l2 5-3 2c1 3 3 5 6 6l2-3 5 2v5c0 1-1 2-2 2C11 21 3 13 3 5c0-1 1-2 2-2z"/></svg><b>一键拨号</b><span>大头像大号码，点错还有确认</span></div>
+          <div class="fi"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="var(--brand)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 1 6 6v4l2 3H4l2-3V9a6 6 0 0 1 6-6z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg><b>到点强提醒</b><span>全屏大字 + 语音播报吃药量血压</span></div>
+          <div class="fi"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="var(--brand)" stroke-width="1.8" stroke-linejoin="round"><path d="M20 14A8 8 0 1 1 10 4a7 7 0 0 0 10 10z"/></svg><b>夜间勿扰</b><span>夜里提醒自动推迟，不吓一跳</span></div>
+          <div class="fi"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="var(--brand)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><b>白名单屏蔽</b><span>子女勾选才显示，广告应用消失</span></div>
+          <div class="fi"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="var(--brand)" stroke-width="1.8" stroke-linejoin="round"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 12h6v5H9z"/></svg><b>电话卡检测</b><span>卡松了自动提醒，一键重启修好</span></div>
+          <div class="fi"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="var(--brand)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v10H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg><b>短信报平安</b><span>子女发条 LLZT，自动回电量与位置</span></div>
+          <div class="fi"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="var(--brand)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><text x="12" y="15" font-size="6.5" text-anchor="middle" fill="var(--brand)" stroke="none" font-weight="700">SOS</text></svg><b>SOS 求助</b><span>按住 3 秒：发定位短信 + 直接呼叫</span></div>
+          <div class="fi"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="var(--brand)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a8 8 0 0 1 16 0"/><path d="M12 14l4-4"/><circle cx="12" cy="14" r="1.5"/></svg><b>流量守门</b><span>余额不足自动关流量，防止乱扣费</span></div>
+        </div>
+        <button class="cta2" data-go="app-care">深入：提醒与守护怎么用 →</button>
+        <button class="cta2" data-go="app-shots" style="background:var(--blue)">看真机实拍截图 →</button>
+        <button class="cta2" data-go="app-cert" style="background:var(--ink)">🛡 背后的理念：银发认证 · 一个提议 →</button>
+      </div>
+    </div>
+
+    <!-- ===== App：故事 ===== -->
+    <div class="layer app-page" id="app-story">
+      <div class="app-head"><button class="back" data-back>←</button><h1>为什么做乐龄桌面</h1></div>
+      <div class="app-body">
+        <div class="card"><div class="em">📞</div>
+          <h3>起因：一通没打出去的电话</h3>
+          <p>一位老人的手机卡死在弹窗里，家人急着打过去，打不通。
+          年轻人上手都关不掉那些“×”——因为那个叉，本来就是假的。</p>
+        </div>
+        <div class="timeline">
+          <div class="tl"><div class="tm">第 1 天</div><div class="tx">给我妈换了智能机，想着有空能视频。<b>结果她打电话说手机坏了，微信找不到了。</b></div></div>
+          <div class="tl"><div class="tm">第 7 天</div><div class="tx">视频过去一看：桌面上多了 40 多个图标，微信被挤到第三屏角落，和“极速版”“红包版”挤在一起。<b>她分不清哪个是真的。</b></div></div>
+          <div class="tl"><div class="tm">那晚</div><div class="tx">我是写代码的，所以做了件很直接的事：给我妈写一个桌面。写着写着，成了现在的乐龄桌面。</div></div>
+        </div>
+        <div class="quote">我们把世界搬到了手机上，然后把门锁了，没告诉爸妈。</div>
+        <p class="bigtext">315 晚会曝光过专门坑老人的“手机清理软件”——越清理越卡。
+        工信部整治了一轮又一轮，弹窗换个壳就回来。年轻人尚且要斗智斗勇，
+        <b>老人呢？他们的诉求小得可怜：看看孙辈，打打电话，看看天气。</b></p>
+        <div class="card"><div class="em">🛡️</div>
+          <h3>所以我们做了三件事</h3>
+          <p>① 桌面零广告零信息流，一个弹窗都不会自己冒出来；<br>
+          ② 白名单模式：陌生应用彻底消失；<br>
+          ③ 适老审查：每一条链路都按“老人第一次用”来审。</p>
+        </div>
+        <p class="bigtext" style="margin-top:20px">小时候，是他们教我们用筷子、过马路。<br>
+        现在，轮到我们了。<b>哪怕只是帮他们关掉一万个弹窗。</b></p>
+      </div>
+    </div>
+
+    <!-- ===== App：护身（功能） ===== -->
+    <div class="layer app-page" id="app-feat">
+      <div class="app-head"><button class="back" data-back>←</button><h1>护身 · 防广告防诈骗</h1></div>
+      <div class="app-body">
+        <div class="card"><div class="em">🚫</div><h3>桌面零广告</h3><p>没有开屏广告、没有信息流、没有红点轰炸。依赖只有 8 个官方库，源码可审计。</p></div>
+        <div class="card"><div class="em">🙈</div><h3>白名单模式</h3><p>子女勾选的应用才显示，陌生应用彻底消失。新装应用即时可见，子女心里有数。</p></div>
+        <div class="card"><div class="em">🧧</div><h3>针对“红包/清理”类防护</h3><p>315 点名的清理软件、WiFi 钥匙、红包助手——这些正是乐龄桌面默认隐藏的对象。</p></div>
+        <div class="card"><div class="em">🔍</div><h3>看得见的安全</h3><p>新装应用即时上报；应用搜索边输边筛；防止“远程诱导装 App”的诈骗路径。</p></div>
+        <button class="cta2" data-go="app-care">继续：看看提醒和守护 →</button>
+      </div>
+    </div>
+
+    <!-- ===== 倡议：银发认证（独立概念页） ===== -->
+    <div class="layer app-page" id="app-cert">
+      <div class="app-head"><button class="back" data-back>←</button><h1>银发认证 · 一个提议</h1></div>
+      <div class="app-body">
+        <div class="card svg-demo" style="background:#10131A;border-color:#10131A;color:#EDF0F5;text-align:center;padding:20px 16px 24px">
+          <svg class="certHero" viewBox="0 0 360 200" width="100%" style="max-width:340px" aria-label="盾牌弹开广告">
+            <defs>
+              <linearGradient id="shg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#6FA8FF"/><stop offset="1" stop-color="#2C6FBF"/>
+              </linearGradient>
+            </defs>
+            <circle class="heroGlow" cx="180" cy="102" r="74" fill="rgba(242,201,76,.12)"/>
+            <g class="heroShield">
+              <path d="M180 46 l50 17 v36 c0 32 -21 49 -50 58 c-29 -9 -50 -26 -50 -58 v-36 z"
+                    fill="url(#shg)" stroke="#F2C94C" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M160 100 l15 15 l27 -32" stroke="#fff" stroke-width="8" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+            <g class="adA a1"><rect x="292" y="34" width="52" height="22" rx="6" fill="#E5484D"/>
+              <text x="318" y="49" font-size="12" fill="#fff" text-anchor="middle">弹窗</text></g>
+            <g class="adA a2"><rect x="296" y="88" width="48" height="22" rx="6" fill="#E8853D"/>
+              <text x="320" y="103" font-size="12" fill="#fff" text-anchor="middle">红包</text></g>
+            <g class="adA a3"><rect x="292" y="142" width="52" height="22" rx="6" fill="#8B5CF6"/>
+              <text x="318" y="157" font-size="12" fill="#fff" text-anchor="middle">假×</text></g>
+            <g class="adA a4"><rect x="16" y="88" width="52" height="22" rx="6" fill="#3E9B4F"/>
+              <text x="42" y="103" font-size="12" fill="#fff" text-anchor="middle">清理</text></g>
+          </svg>
+          <p style="font-size:22px;font-weight:800;line-height:1.6;color:#F2C94C;margin-top:8px">
+            未成年人有防沉迷，<br>老年人也该有银发认证。</p>
+          <p style="font-size:15px;color:#C9D2E0;margin-top:12px">银发认证不是机构、不发证书、不收费。<br>它是一句人人能复述的话：</p>
+          <p style="font-size:17px;font-weight:700;color:#fff;margin-top:10px">一款应用只要敢对老人弹广告，<br>就不配出现在爸妈的手机上。</p>
+        </div>
+
+        <div class="card"><div class="em">👀</div><h3>老人的注意力，不该是别人的生意</h3>
+          <p>广告是把注意力打包卖给第三方。年轻人被明码标价，老人被变本加厉——
+          他们更难分辨真假、更难关掉弹窗、更承受不起点错一下的代价。</p></div>
+        <div class="card"><div class="em">💸</div><h3>买不起广告的东西，不代表该被围猎</h3>
+          <p>老人的钱要买菜、看病、交话费。对老人狂轰滥炸，商业上近乎无效，
+          却造出了手机卡顿、上当受骗、不敢碰手机。
+          <b>既然无利可图，何必为难他们？</b></p></div>
+        <div class="card"><div class="em">📏</div><h3>认证不是表扬，是底线</h3>
+          <p>通过不代表优秀，只代表"没把老人当猎物"——
+          就像食品配料表，干净是本分，不是恩赐。</p></div>
+
+        <p class="bigtext" style="margin-top:6px"><b>我们呼吁每款应用做到三件事：</b></p>
+        <div class="card"><h3>① 对老人不投广告</h3><p>主流广告联盟都支持按人群定向关闭——把 55 岁以上用户关掉，技术上一行配置的事。</p></div>
+        <div class="card"><h3>② 不耍假"×"，不吓唬人</h3><p>关闭按钮就得能关；"您的手机已中毒"这类恐吓文案零容忍。</p></div>
+        <div class="card"><h3>③ 大字、少步骤、不设坑</h3><p>正文字号大一点，核心路径短一点，付费前多问一句。</p></div>
+
+        <div class="card" style="text-align:center;background:#FFF7EE;border-color:var(--brand)">
+          <div style="font-size:34px">🛡️</div>
+          <p style="font-size:19px;font-weight:800;margin-top:6px">看到银发认证标，就知道<br>这款应用对老人是干净的。</p>
+        </div>
+
+        <div class="card" style="background:#10131A;color:#fff">
+          <h3 style="color:#F2C94C">把这句话带给更多人</h3>
+          <p style="color:#EDF0F5">「未成年人有防沉迷，老年人也该有银发认证。」<br>——发到家庭群，就是参与。</p>
+          <a class="cta2" href="https://github.com/safphere/leling-launcher" target="_blank" rel="noopener" style="background:var(--gold);color:#10131A;margin-top:12px;text-decoration:none">⭐ 去 GitHub 点亮这个提议</a>
+          <p style="font-size:13px;color:#8B93A5;margin-top:10px">这是一个开源倡议，不是任何机构的官方认证。细则在社区公开讨论，欢迎共建。</p>
+        </div>
+        <button class="cta2" data-go="app-tour" style="margin-top:12px">📱 看看把这个理念做出来的桌面 →</button>
+      </div>
+    </div>
+
+    <!-- ===== App：安心（提醒/勿扰） ===== -->
+    <div class="layer app-page" id="app-care">
+      <div class="app-head"><button class="back" data-back>←</button><h1>安心 · 提醒与守护</h1></div>
+      <div class="app-body">
+        <div class="card svg-demo" style="padding:18px 14px 8px">
+          <svg class="dayflow" viewBox="0 0 340 312" width="100%" aria-label="爸妈的一天流程">
+            <path class="track" d="M40 18 V294" stroke-linecap="round" stroke-width="4" fill="none"/>
+            <path class="flow"  d="M40 18 V294" stroke="var(--brand)" stroke-linecap="round" stroke-width="4" fill="none"/>
+            <g class="nd n1">
+              <circle cx="40" cy="34" r="17" fill="#E8722A"/>
+              <rect x="33" y="31" width="14" height="6" rx="3" fill="#fff" transform="rotate(-35 40 34)"/>
+              <text x="72" y="31" font-size="13" font-weight="800" fill="#1F2430">07:00 吃降压药</text>
+              <text x="72" y="49" font-size="12" fill="#4A5160">全屏大字 + 语音播报，点了「知道了」子女可见</text>
+            </g>
+            <g class="nd n2">
+              <circle cx="40" cy="106" r="17" fill="#2C6FBF"/>
+              <rect x="35" y="97" width="11" height="17" rx="3" fill="#fff"/>
+              <circle cx="40.5" cy="110" r="1.4" fill="#2C6FBF"/>
+              <text x="72" y="103" font-size="13" font-weight="800" fill="#1F2430">09:00 想儿子了</text>
+              <text x="72" y="121" font-size="12" fill="#4A5160">点桌面大头像直接拨号，不用找通讯录</text>
+            </g>
+            <g class="nd n3">
+              <circle cx="40" cy="178" r="17" fill="#F2A93B"/>
+              <circle cx="40" cy="178" r="5.5" fill="#fff"/>
+              <g stroke="#fff" stroke-width="2" stroke-linecap="round">
+                <line x1="40" y1="167" x2="40" y2="170"/><line x1="40" y1="186" x2="40" y2="189"/>
+                <line x1="29" y1="178" x2="32" y2="178"/><line x1="48" y1="178" x2="51" y2="178"/>
+                <line x1="32.5" y1="170.5" x2="34.5" y2="172.5"/><line x1="45.5" y1="183.5" x2="47.5" y2="185.5"/>
+                <line x1="47.5" y1="170.5" x2="45.5" y2="172.5"/><line x1="34.5" y1="183.5" x2="32.5" y2="185.5"/>
+              </g>
+              <text x="72" y="175" font-size="13" font-weight="800" fill="#1F2430">15:00 天气关怀</text>
+              <text x="72" y="193" font-size="12" fill="#4A5160">高温/雨雪自动提醒，多喝水、带把伞</text>
+            </g>
+            <g class="nd n4">
+              <circle cx="40" cy="250" r="17" fill="#3E4A5A"/>
+              <path d="M45 242 a10 10 0 1 0 6 15 a8 8 0 1 1 -6 -15 z" fill="#F2C94C"/>
+              <text x="72" y="247" font-size="13" font-weight="800" fill="#1F2430">22:00 夜间勿扰</text>
+              <text x="72" y="265" font-size="12" fill="#4A5160">提醒自动推迟到早上，SOS 求助不受影响</text>
+            </g>
+            <text x="40" y="306" font-size="12" fill="#8B93A5">↑ 爸妈的一天，桌面全安排好了</text>
+          </svg>
+        </div>
+        <div class="card"><div class="em">💊</div><h3>吃药提醒，到点全屏大字+语音</h3><p>子女远程设好“早 8 点吃降压药”，到点全屏弹出并语音播报。
+        点「知道了」记录确认，子女发条短信就能查今天吃没吃。</p></div>
+        <div class="card"><div class="em">🌙</div><h3>夜间勿扰（默认 22:00~07:00）</h3><p>窗口内的提醒不弹屏不发声，自动推迟到早上——夜里 10 点的全屏语音提醒是灾难。</p></div>
+        <div class="card"><div class="em">🆘</div><h3>SOS 按住 3 秒</h3><p>自动给子女发带定位的短信，同时直接呼叫紧急联系人。不用记住任何号码。</p></div>
+        <div class="card"><div class="em">📶</div><h3>话费守门员</h3><p>自动查流量，余额不足自动关移动数据防扣费，月结自动恢复。</p></div>
+        <button class="cta2" data-go="app-llzt">这些状态，子女一条短信就能查 →</button>
+
+      <!-- ===== 互动演示 1：PIN 键盘 ===== -->
+      <div class="demo-h">🔐 试一试：子女模式 PIN 门（演示版 1234）</div>
+      <div style="background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:20px">
+        <div id="pinDots" style="text-align:center;font-size:24px;letter-spacing:10px;min-height:34px">○ ○ ○ ○</div>
+        <div id="pinMsg" style="text-align:center;min-height:24px;font-size:14.5px;color:var(--ink2)">输入 PIN 后点 ✓（输错 5 次会锁定，与真机一致）</div>
+        <div id="pinPad" style="display:grid;grid-template-columns:repeat(3,64px);gap:10px;justify-content:center;margin-top:10px"></div>
+      </div>
+
+      <!-- ===== 互动演示 2：隐藏应用 ===== -->
+      <div class="demo-h">🙈 试一试：点击图标隐藏 / 恢复</div>
+      <div style="background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:20px">
+        <div id="hideGrid" style="display:grid;grid-template-columns:repeat(4,64px);gap:14px;justify-content:center"></div>
+        <div id="hideHint" style="text-align:center;color:var(--ink2);font-size:14.5px;margin-top:12px">白名单模式下：被隐藏的应用，老人永远看不到</div>
+      </div>
+
+      <!-- ===== 互动演示 3：夜间勿扰 ===== -->
+      <div class="demo-h">🌙 试一试：把时间拨到夜里</div>
+      <div style="background:#10131A;border-radius:16px;padding:20px;color:#C9D2E0">
+        <div style="display:flex;align-items:center;gap:12px;padding:8px 4px;font-size:16px">
+          <span id="ndIcon">☀️</span> 现在：<b id="clockNow">09:00</b>
+          <div style="flex:1"></div>
+          <div id="dndSw" role="switch" style="width:52px;height:28px;border-radius:14px;background:#3A4150;position:relative;cursor:pointer">
+            <div id="dndKnob" style="width:22px;height:22px;border-radius:50%;background:#8B93A5;position:absolute;top:3px;left:3px;transition:.25s"></div>
+          </div>
+        </div>
+        <div id="ndStatus" style="font-size:15px;line-height:1.9;margin-top:10px">
+          ☀️ 白天：「吃降压药」到点全屏弹出 + 语音播报。
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- ===== App：LLZT ===== -->
+    <div class="layer app-page" id="app-llzt">
+      <div class="app-head"><button class="back" data-back>←</button><h1>报平安 · 一条短信</h1></div>
+      <div class="app-body">
+        <p class="bigtext">子女向父母手机发一条短信：</p>
+        <div class="card" style="text-align:center"><span style="font-size:30px;font-weight:800;letter-spacing:6px">LLZT</span></div>
+        <p class="bigtext">父母手机自动回复一条状态短信（下方为真实格式）：</p>
+        <div class="chat2" id="llztChat2">
+          <div class="b2 in">LLZT</div>
+          <div class="b2 out">【乐龄桌面】状态报告
+电量 100%（充电中）
+电话卡 正常
+流量 剩余 86.5MB
+今日提醒已确认 1/2 项</div>
+        </div>
+        <button class="cta2" id="llztReplay" style="margin-top:12px">▶ 重放这条回复</button>
+        <p class="bigtext" style="margin-top:14px">🔒 只回复通讯录联系人，陌生号码静默忽略；设置内可一键关闭；零服务器零账号。</p>
+        <button class="cta2" data-go="app-shots">看真机截图 →</button>
+      </div>
+    </div>
+
+    <!-- ===== App：截图墙 ===== -->
+    <div class="layer app-page" id="app-shots">
+      <div class="app-head"><button class="back" data-back>←</button><h1>看一看 · 真机实拍</h1></div>
+      <div class="app-body">
+        <img class="shot" src="screens/01_home_contacts.png" alt="联系人页" loading="lazy">
+        <p class="bigtext" style="text-align:center">▲ 联系人页：点照片直接打电话</p>
+        <img class="shot" src="screens/02_home_life.png" alt="生活页" loading="lazy">
+        <p class="bigtext" style="text-align:center">▲ 生活页：时钟 / 天气 / 农历 / 月历</p>
+        <img class="shot" src="screens/03_home_apps.png" alt="应用页" loading="lazy">
+        <p class="bigtext" style="text-align:center">▲ 应用页：大图标网格 + 搜索</p>
+        <img class="shot" src="screens/04_tools.png" alt="便捷页" loading="lazy">
+        <p class="bigtext" style="text-align:center">▲ 便捷页：手电筒 / 家庭地址卡</p>
+        <img class="shot" src="screens/05_sms_menu.png" alt="长按菜单" loading="lazy">
+        <p class="bigtext" style="text-align:center">▲ 长按联系人：发短信 / 编辑</p>
+        <img class="shot" src="screens/08_search_dialog.png" alt="应用搜索" loading="lazy">
+        <p class="bigtext" style="text-align:center">▲ 应用搜索 · 边输边筛</p>
+        <img class="shot" src="screens/06_quiet_settings.png" alt="勿扰设置" loading="lazy">
+        <p class="bigtext" style="text-align:center">▲ 夜间勿扰 · 提醒准点性引导</p>
+      </div>
+    </div>
+
+    <!-- ===== App：工具箱 ===== -->
+    <div class="layer app-page" id="app-tools">
+      <div class="app-head"><button class="back" data-back>←</button><h1>工具箱 · 获取与构建</h1></div>
+      <div class="app-body">
+        <div class="card"><h3>📱 直接安装</h3><p>从 GitHub Releases 下载 APK，或克隆仓库用 Android Studio 推到爸妈手机。</p>
+        <a class="cta2" href="https://github.com/safphere/leling-launcher/releases" target="_blank" rel="noopener">前往 Releases 下载</a></div>
+        <div class="card"><h3>🔨 自己构建</h3><p>克隆 → Android Studio 打开 → 插上手机点运行。无需任何签名配置即可出 Debug 包。</p></div>
+        <div class="card"><h3>🛡️ 解锁 Device Owner</h3><p>在<b>全新恢复出厂</b>的设备上执行一条命令，解锁静默重启等系统能力：</p>
+        <p style="font-family:monospace;font-size:13.5px;background:#F0EDE6;border-radius:10px;padding:10px 12px;word-break:break-all">adb shell dpm set-device-owner com.safphere.launcher/.admin.ElderDeviceAdminReceiver</p></div>
+        <a class="cta2" href="https://github.com/safphere/leling-launcher" target="_blank" rel="noopener">GitHub 仓库 · Apache-2.0</a>
+      </div>
+    </div>
+
+    <!-- ===== App：设置（隐私承诺） ===== -->
+    <div class="layer app-page" id="app-priv">
+      <div class="app-head"><button class="back" data-back>←</button><h1>设置 · 关于</h1></div>
+      <div class="app-body">
+        <div class="card"><div class="em">🛡️</div><h3>适老承诺</h3>
+          <p>每一条链路都按“老人第一次用”的标准审查：大字、高对比、零广告、零诱导。
+          干净不是勋章，是底线。</p></div>
+        <div class="card"><div class="em">📜</div><h3>开源 Apache-2.0</h3><p>全部源码可审计。欢迎安全社区监督，欢迎子女们提需求。</p></div>
+      </div>
+    </div>
+
+    <!-- 桌面导览卡（清场后一次性出现） -->
+    <div id="guideBanner">✅ <b>清场成功！</b>这就是爸妈以后看到的桌面。
+      <span class="g">点卡片试功能 · 底部 Dock 换页 · 桌面上的 🛡 徽章讲清银发认证</span></div>
+
+    <!-- 守护横幅（清场后偶发） -->
+    <div id="guardBanner"><svg class="dico"><use href="#i-cert"/></svg><span>已为你拦截 <b id="gbN">1</b> 条广告 · 银发认证守护中</span></div>
+
+    <!-- 通知横幅容器（广告地狱用） -->
+    <div id="adLayer"></div>
+    <div id="adCounter">已弹出 0 个弹窗 · 假“×”逃逸 0 次</div>
+
+    <!-- Dock -->
+    <div id="dock">
+      <div class="di on" data-go="layer-home"><svg class="dico"><use href="#i-home"/></svg>桌面</div>
+      <div class="di" data-go="app-story"><svg class="dico"><use href="#i-story"/></svg>故事</div>
+      <div class="di" data-go="app-care"><svg class="dico"><use href="#i-pill"/></svg>安心</div>
+      <div class="di" data-go="app-tools"><svg class="dico"><use href="#i-tools"/></svg>工具</div>
+      <div class="di" data-go="app-cert"><span class="em">🛡️</span>倡议</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= 基础工具 ================= */
+document.getElementById('chaosHint').style.display='block';
+if(matchMedia('(min-width:900px)').matches) document.getElementById('chaosHint').style.display='none';
+document.getElementById('pcCert').addEventListener('click', function(){ go('app-cert'); });
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+let blocked = 0;
+
+/* ================= 状态栏时钟 ================= */
+function tickClock(){
+  const d = new Date();
+  $('#sbClock').textContent = d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
+  $('#hmClock').textContent = d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
+  const wk='日一二三四五六';
+  $('#hmDate').textContent = (d.getMonth()+1)+'月'+d.getDate()+'日 星期'+wk[d.getDay()];
+}
+tickClock(); setInterval(tickClock, 15000);
+
+/* ================= 层导航 ================= */
+const layers = ['layer-chaos','layer-home','app-tour','app-story','app-feat','app-cert','app-care','app-llzt','app-shots','app-tools','app-priv'];
+function go(id){
+  layers.forEach(l=>{
+    const el = document.getElementById(l); if(!el) return;
+    el.classList.remove('on','left');
+  });
+  const t = document.getElementById(id); if(!t) return;
+  t.classList.add('on'); t.scrollTop = 0;
+  $$('#dock .di').forEach(d=>d.classList.toggle('on', d.dataset.go==='layer-home' && id==='layer-home'));
+}
+$$('.appicon').forEach(a=>a.addEventListener('click',()=>go(a.dataset.go)));
+$$('[data-go]').forEach(el=>{
+  if(el.classList.contains('appicon')) return;
+  el.addEventListener('click',()=>go(el.dataset.go));
+});
+$$('[data-back]').forEach(b=>b.addEventListener('click',()=>go('layer-home')));
+
+/* ================= 广告地狱引擎 ================= */
+const ADS = [
+  {i:'🧹',n:'内存清理大师',t:'您的手机已变卡，立即清理',c:'#4A90E2'},
+  {i:'🧧',n:'头条福利中心',t:'您有 88 元红包待领取',c:'#E5484D'},
+  {i:'📰',n:'热点快报',t:'震惊！老人最爱看的 10 条新闻',c:'#F5A623'},
+  {i:'🔑',n:'WiFi万能钥匙',t:'检测到 3 个免费 WiFi',c:'#7ED321'},
+  {i:'🔋',n:'电池医生',t:'电池损耗 32%，立即修复',c:'#50E3C2'},
+  {i:'🎰',n:'欢乐金屋',t:'登录就送 666 金币',c:'#9013FE'},
+  {i:'❤️',n:'同城有缘',t:'3 位异性看了您',c:'#FF5A79'},
+  {i:'📶',n:'网络加速球',t:'一键加速提升 200%',c:'#F8E71C'},
+  {i:'🎁',n:'每日抽奖',t:'恭喜！您中了一等奖',c:'#E5484D'},
+  {i:'🌦️',n:'天气管家Pro',t:'明日暴雨，下载看详情',c:'#4A90E2'}
+];
+const adLayer = document.getElementById('adLayer');
+let adCount = 0, escCount = 0, chaosOn = false, chaosTimers = [];
+
+function spawnAd(){
+  if(!chaosOn) return;
+  const a = ADS[adCount % ADS.length];
+  const n = document.createElement('div');
+  n.className='adn';
+  n.innerHTML = '<div class="ic" style="background:'+a.c+'">'+a.i+'</div>'+
+    '<div><b>'+a.n+'</b><span>'+a.t+'</span></div><button class="x" aria-label="关闭">✕</button>';
+  adLayer.appendChild(n);
+  adCount++;
+  updateCounter();
+  n.querySelector('.x').addEventListener('click', function(e){
+    e.stopPropagation(); n.remove(); escCount++;
+    // 现实的残酷：关掉一个，来俩
+    if(chaosOn){ setTimeout(spawnAd, 350); if(Math.random()<.6) setTimeout(spawnAd, 700); }
+  });
+  setTimeout(()=>{ if(n.parentNode) n.remove(); }, 8000);
+}
+function updateCounter(){
+  const el = document.getElementById('sbBlocked');
+  if(el) el.textContent = '已拦截 '+blocked+' 条';
+  const c = document.getElementById('adCounter');
+  if(c) c.textContent = '已弹出 '+adCount+' 个弹窗 · 假“×”逃逸 '+escCount+' 次';
+}
+function redEnvelope(){
+  if(!chaosOn) return;
+  const r = document.createElement('div');
+  r.className='redenv'; r.innerHTML='<div class="gold">¥</div>领红包';
+  r.style.left = (8+Math.random()*72)+'%'; r.style.top='18%';
+  r.addEventListener('click',function(){
+    r.innerHTML='<div class="gold">¥</div>88.00';
+    setTimeout(()=>{ if(r.parentNode) spawnAd(); },400);
+  });
+  adLayer.appendChild(r);
+  setTimeout(()=>{ if(r.parentNode) r.remove(); },7000);
+}
+function popFullAd(){
+  if(!chaosOn) return;
+  const f = document.createElement('div');
+  f.className='fullad';
+  f.innerHTML='<div class="big">🎉</div><h4>恭喜您！今日运气王</h4>'+
+    '<p>再抽一次必得华为手机</p><button class="dl">立即领取</button>'+
+    '<div style="margin-top:24px"><button class="fakebox" aria-label="关闭">✕</button></div>';
+  adLayer.appendChild(f);
+  f.querySelector('.fakebox').addEventListener('click',function(){
+    f.querySelector('.dl').textContent='已领取，再领一次';
+  });
+  f.querySelector('.dl').addEventListener('click',function(){ f.remove(); spawnAd(); });
+}
+function chaosTick(){
+  if(!chaosOn) return;
+  spawnAd();
+  if(Math.random()<.4) redEnvelope();
+  if(adCount>0 && adCount%7===3) popFullAd();
+  chaosTimers.push(setTimeout(chaosTick, 1600+Math.random()*1400));
+}
+function startChaos(){
+  if(chaosOn) return; chaosOn = true;
+  chaosTick();
+}
+function stopChaos(){
+  chaosOn = false;
+  chaosTimers.forEach(clearTimeout); chaosTimers = [];
+  adLayer.innerHTML = '';
+  const ch = document.getElementById('chaosHint');
+  if(ch) ch.style.display = 'none';
+}
+
+/* ================= 开场编排 ================= */
+(async function intro(){
+  await sleep(900);
+  startChaos();
+  await sleep(6000);
+  const fu = document.getElementById('fedUp');
+  if(fu) fu.style.display='block';
+})();
+
+document.getElementById('fedUp').addEventListener('click', async function(){
+  this.disabled = true; this.textContent='正在清场…';
+  stopChaos();
+  const sw = document.getElementById('shieldSweep');
+  sw.style.display='flex';
+  const bc = document.getElementById('blockCount');
+  let n = 0; const target = Math.max(adCount,18);
+  const t = setInterval(()=>{ n = Math.min(target, n+Math.ceil(target/18));
+    bc.textContent='已拦截广告弹窗 '+n+' 条'; if(n>=target) clearInterval(t); }, 60);
+  await sleep(2600);
+  sw.style.display='none';
+  go('layer-home');
+  setTimeout(function(){
+    const gb = document.getElementById('guideBanner');
+    if(gb){ gb.style.display='block'; setTimeout(function(){ gb.style.display='none'; }, 10000); }
+  }, 1200);
+  // 守护期提示只出现两次，之后彻底安静
+  setTimeout(showGuardBanner, 12000);
+  setTimeout(showGuardBanner, 75000);
+  function showGuardBanner(){
+    blocked++;
+    updateCounter();
+    const g = document.getElementById('guardBanner');
+    document.getElementById('gbN').textContent = blocked;
+    g.style.display='flex';
+    setTimeout(()=>{ g.style.display='none'; }, 4200);
+  }
+  const tl2 = document.querySelectorAll('#story .tl .tx');
+  if(tl2[1]) tl2[1].innerHTML = '视频过去一看：桌面上干干净净，只有几个大头像。<b>她愣了几秒，然后笑了：“这我会用。”</b>';
+  const ac = document.getElementById('adCounter');
+  if(ac) ac.style.display = 'none';
+});
+
+/* ================= 演示：PIN 键盘 ================= */
+(function(){
+  const pad = document.getElementById('pinPad');
+  const dots = document.getElementById('pinDots');
+  const msg = document.getElementById('pinMsg');
+  if(!pad) return;
+  let pin='', fails=0, lock=0;
+  function paint(){
+    dots.textContent='● '.repeat(pin.length)+'○ '.repeat(4-pin.length);
+  }
+  function verify(){
+    if(pin==='1234'){
+      dots.textContent='✔ ✔ ✔ ✔'; msg.style.color='var(--green)';
+      msg.textContent='✓ 已解锁 —— 里面每个开关都关系爸妈的日常';
+      pin='';
+      setTimeout(function(){ paint(); msg.textContent='输入 PIN 后点 ✓'; msg.style.color=''; },2200);
+    } else if(pin.length===4){
+      fails++;
+      dots.textContent='✕ ✕ ✕ ✕'; msg.style.color='var(--red)';
+      msg.textContent='密码不对（剩 '+(5-fails)+' 次）';
+      if(fails>=5){ lock=Date.now()+60000;
+        msg.textContent='错误 5 次，锁定 60 秒（与真机一致）';
+        setTimeout(function(){ fails=0; msg.textContent='输入 PIN 后点 ✓'; msg.style.color=''; },2500);
+      }
+      pin='';
+    }
+  }
+  '1 2 3 4 5 6 7 8 9 ⌫ 0 ✓'.split(' ').forEach(function(k){
+    const b=document.createElement('b'); b.textContent=k;
+    b.addEventListener('click',function(){
+      if(Date.now()<lock) return;
+      if(k==='⌫'){ pin=pin.slice(0,-1); paint(); }
+      else if(k==='✓'){ verify(); }
+      else if(pin.length<4){ pin+=k; paint(); verify(); }
+    });
+    pad.appendChild(b);
+  });
+})();
+
+/* ================= 演示：隐藏应用 ================= */
+(function(){
+  const grid = document.getElementById('hideGrid');
+  if(!grid) return;
+  const apps = [
+    ['🎵','抖音'],['🎬','快手'],['🌐','浏览器'],['🧹','清理大师'],
+    ['🧧','红包助手'],['🔑','WiFi钥匙'],['📰','新闻热点'],['🔋','电池医生']
+  ];
+  apps.forEach(function(a){
+    const el = document.createElement('div');
+    el.className='app';
+    el.innerHTML = '<div class="ic">'+a[0]+'</div>'+a[1];
+    el.addEventListener('click',function(){
+      el.classList.toggle('hidden');
+      const hid = grid.querySelectorAll('.app.hidden').length;
+      const hint = document.getElementById('hideHint');
+      if(hint) hint.textContent = hid>0
+        ? '已隐藏 '+hid+' 个 —— 桌面上再也看不到它们'
+        : '全部可见 —— 建议给老人保留精简桌面';
+    });
+    grid.appendChild(el);
+  });
+})();
+
+/* ================= 演示：夜间勿扰 ================= */
+(function(){
+  const sw = document.getElementById('dndSw');
+  const knob = document.getElementById('dndKnob');
+  const icon = document.getElementById('ndIcon');
+  const clock = document.getElementById('clockNow');
+  const status = document.getElementById('ndStatus');
+  if(!sw) return;
+  let night = false;
+  function render(){
+    sw.style.background = night?'var(--green)':'#3A4150';
+    knob.style.background = night?'#fff':'#8B93A5';
+    knob.style.left = night?'27px':'3px';
+    icon.textContent = night?'🌙':'☀️';
+    clock.textContent = night?'23:00':'09:00';
+    status.innerHTML = night
+      ? '🌙 <b>夜间勿扰中</b>：提醒不弹屏、不发声，自动推迟到早 7:00。SOS 紧急求助不受影响。'
+      : '☀️ 白天：「吃降压药」到点全屏弹出 + 语音播报。';
+  }
+  sw.addEventListener('click',function(){ night=!night; render(); });
+  render();
+})();
+
+/* ================= LLZT 重放 ================= */
+(function(){
+  const chat = document.getElementById('llztChat2');
+  const btn = document.getElementById('llztReplay');
+  if(!chat||!btn) return;
+  const script = [
+    {c:'in', d:0, t:'LLZT'},
+    {c:'out', d:1100, t:'【乐龄桌面】状态报告\n电量 100%（充电中）\n电话卡 正常\n流量 剩余 86.5MB\n今日提醒已确认 1/2 项'}
+  ];
+  btn.addEventListener('click',function(){
+    chat.innerHTML='';
+    script.forEach(function(m){
+      setTimeout(function(){
+        const b=document.createElement('div'); b.className='b2 '+m.c;
+        b.style.whiteSpace='pre-wrap'; b.textContent=m.t;
+        chat.appendChild(b);
+      }, m.d);
+    });
+  });
+})();
+</script>
+
+<script>
+/* 全景页：真机截图标签切换 */
+(function(){
+  const img=document.getElementById('tourImg'), cap=document.getElementById('tourCap');
+  if(!img) return;
+  document.querySelectorAll('.tourTabs .tt').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.tourTabs .tt').forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      img.src=b.dataset.shot; cap.textContent=b.dataset.cap;
+    });
+  });
+})();
+
+/* SVG 演示：进入视口后播放一次（IO + 切层后矩形双保险） */
+(function(){
+  function rectCheck(){
+    var els=document.querySelectorAll('.svg-demo');
+    for(var i=0;i<els.length;i++){
+      var el=els[i];
+      if(el.classList.contains('inview')) continue;
+      var r=el.getBoundingClientRect();
+      if(r.top<innerHeight*0.92 && r.bottom>0) el.classList.add('inview');
+    }
+  }
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('inview'); io.unobserve(e.target); }
+      });
+    },{threshold:.2});
+    document.querySelectorAll('.svg-demo').forEach(function(el){ io.observe(el); });
+  }
+  window.addEventListener('resize', rectCheck);
+  var _go = go;
+  window.go = function(id){ _go(id); setTimeout(rectCheck, 500); };
+  setTimeout(rectCheck, 300);
+  setTimeout(rectCheck, 1200);
+})();
+</script>
+</body>
+</html>

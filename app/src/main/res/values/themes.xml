@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Safphere" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorPrimaryVariant">@color/blue_dark</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">@color/green</item>
+        <item name="colorSecondaryVariant">@color/green_dark</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="android:colorBackground">@color/bg</item>
+        <item name="colorSurface">@color/card</item>
+        <item name="android:statusBarColor">#FFFFFF</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">#FFFFFF</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+    </style>
+
+    <!-- 主桌面：沉浸一点，白底 -->
+    <style name="Theme.Safphere.Home">
+        <item name="android:windowBackground">@color/bg</item>
+    </style>
+
+    <!-- 全屏警报 -->
+    <style name="Theme.Safphere.Alert">
+        <item name="android:windowBackground">#FFFFFF</item>
+    </style>
+
+    <!-- 大按钮文字样式 -->
+    <style name="BigButton">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="ElderTextBig">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/text_main</item>
+    </style>
+</resources>

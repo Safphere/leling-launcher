@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- 【开放接口】外部警报推送权限：signature级，仅同签名应用可推送警报 -->
+    <permission
+        android:name="com.safphere.launcher.permission.PUSH_ALERT"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.safphere.launcher.permission.PUSH_ALERT" />
+
+    <!-- 拨号 -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <!-- 挂断通话（TelecomManager.endCall，API 28+ 运行时授权） -->
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS"
+        tools:ignore="ProtectedPermissions" />
+    <!-- 导入联系人 -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <!-- 读取SIM卡状态（API31+ getSimState 需要） -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!-- AI语音识别 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- 防沉迷：应用使用统计（需在系统"使用情况访问"中授权） -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+    <!-- 紧急求助短信附带定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- 开机恢复每日SIM检测 -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- 作为桌面枚举全部应用，做白名单 -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+    <!-- SIM异常时后台弹全屏提醒（API33+） -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 流量智能管理：发查询短信 / 收运营商回复 / 兜底读收件箱 -->
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <!-- 数据开关二级降级：signature|development权限，正常安装不会授予，
+         仅子女 adb 执行 pm grant com.safphere.launcher android.permission.WRITE_SECURE_SETTINGS 后生效 -->
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+
+    <!-- 健康提醒定时闹钟（不可用时自动降级非精确） -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <!-- 包可见性：枚举可启动应用做白名单（launcher常规做法） -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
+
+    <application
+        android:name=".SafphereApp"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Safphere">
+
+        <!-- ============ 主桌面（Launcher） ============ -->
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".home.HomeActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:clearTaskOnLaunch="true"
+            android:stateNotNeeded="true"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@style/Theme.Safphere.Home"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- ============ 健康提醒 ============ -->
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".reminder.ReminderManageActivity"
+            android:exported="false" />
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".reminder.ReminderEditActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <receiver
+            android:name=".reminder.ReminderReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- ============ 权限自检与授权页 ============ -->
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".perm.PermissionStatusActivity"
+            android:exported="false" />
+
+        <!-- ============ 通用全屏警报页（SIM/地震/洪水等一切警报） ============ -->
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".alert.AlertActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:theme="@style/Theme.Safphere.Alert" />
+
+        <!-- ============ 联系人编辑 ============ -->
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".contacts.ContactEditActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- ============ 发短信（大输入框+常用短语） ============ -->
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".sms.SmsComposeActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- ============ 子女模式设置 ============ -->
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".settings.SettingsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- ============ 白名单应用选择（子女） ============ -->
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".settings.AppPickerActivity"
+            android:exported="false" />
+
+        <!-- ============ 首次配置向导 ============ -->
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".setup.SetupWizardActivity"
+            android:exported="false" />
+
+        <!-- ============ AI问答 ============ -->
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".ai.AiChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- ============ 开机：恢复每日检测排期 ============ -->
+        <receiver
+            android:name=".sim.BootCompletedReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- ============ 每日定时检查（应用内部闹钟，不导出） ============ -->
+        <receiver
+            android:name=".sim.DailyCheckReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- ============ 运营商回复短信（受BROADCAST_SMS权限保护，仅系统可发） ============ -->
+        <receiver
+            android:name=".flow.SmsReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="0">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- ============ 查询短信发送60秒后兜底读收件箱（内部闹钟，不导出） ============ -->
+        <receiver
+            android:name=".flow.FlowInboxCheckReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- ============ 调试钩子（debug构建内自检，release忽略） ============ -->
+        <receiver
+            android:name=".flow.FlowDebugReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.safphere.launcher.DEBUG_INJECT_SMS" />
+                <action android:name="com.safphere.launcher.DEBUG_BILLING_CHECK" />
+                <action android:name="com.safphere.launcher.DEBUG_GOTO_PAGE" />
+                <action android:name="com.safphere.launcher.DEBUG_IDLE" />
+            </intent-filter>
+        </receiver>
+
+        <!-- ============ 无障碍服务（电源菜单fallback） ============ -->
+        <service
+            android:name=".agent.AgentAccessibilityService"
+            android:exported="true"
+            android:label="@string/a11y_service_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <!-- ============ 无障碍服务 2（电源菜单重启降级，不读屏幕内容） ============ -->
+        <service
+            android:name=".a11y.ElderAccessibilityService"
+            android:exported="true"
+            android:label="@string/a11y_service_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <!-- ============ 设备管理员（Device Owner 静默重启用） ============ -->
+        <receiver
+            android:name=".admin.ElderDeviceAdminReceiver"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- ============ 防沉迷规则管理（子女模式） ============ -->
+        <activity
+            android:name=".guard.GuardRuleListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- ============ AI 悬浮球（无障碍overlay，随服务启停） ============ -->
+        <service
+            android:name=".agent.FloatingBallService"
+            android:exported="false" />
+
+        <!-- ============ 防沉迷阻断页（大字，回桌面） ============ -->
+        <activity
+            android:name=".guard.BlockActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Safphere.Alert" />
+
+        <!-- ============ 防沉迷看门狗（每分钟）与开机/解锁恢复 ============ -->
+        <receiver
+            android:name=".guard.GuardWatchdogReceiver"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name=".guard.GuardBootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
+
+        <!-- ============ 【对外接口】外部警报推送（地震/洪水等，签名权限保护） ============ -->
+        <receiver
+            android:name=".integration.ExternalAlertReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="com.safphere.launcher.permission.PUSH_ALERT">
+            <intent-filter>
+                <action android:name="com.safphere.launcher.action.PUSH_ALERT" />
+            </intent-filter>
+        </receiver>
+
+        <!-- ============ 【对外接口】设备状态只读查询（签名权限保护） ============ -->
+        <provider
+            android:name=".integration.SafphereStatusProvider"
+            android:authorities="com.safphere.launcher.status"
+            android:exported="true"
+            android:readPermission="com.safphere.launcher.permission.PUSH_ALERT"
+            android:grantUriPermissions="false" />
+</application>
+</manifest>
