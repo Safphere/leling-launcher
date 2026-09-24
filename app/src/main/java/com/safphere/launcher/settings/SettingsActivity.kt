@@ -192,6 +192,20 @@ class SettingsActivity : AppCompatActivity() {
         binding.swShowAllApps.setOnCheckedChangeListener { _, checked ->
             Prefs.showAllApps = checked
         }
+        // 广告卫士：自动跳过第三方应用的开屏广告（无障碍服务执行）
+        binding.swAdSkip.isChecked = Prefs.adSkipEnabled
+        binding.swAdSkip.setOnCheckedChangeListener { _, checked ->
+            Prefs.adSkipEnabled = checked
+            when {
+                !checked -> Toast.makeText(this, "广告卫士已关闭", Toast.LENGTH_SHORT).show()
+                com.safphere.launcher.perm.PermCatalog.accessibilityEnabled(this) ->
+                    Toast.makeText(this, "🛡 广告卫士已开启：开屏广告将自动跳过", Toast.LENGTH_LONG).show()
+                else -> {
+                    startActivity(Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                    Toast.makeText(this, "请开启「乐龄桌面」的无障碍服务，广告卫士才会生效", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
         binding.rowEmergency.setOnClickListener { pickEmergencyContacts() }
         binding.rowPermCheck.setOnClickListener {
             startActivity(android.content.Intent(this, com.safphere.launcher.perm.PermissionStatusActivity::class.java))

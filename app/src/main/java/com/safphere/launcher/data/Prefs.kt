@@ -233,6 +233,11 @@ object Prefs {
         get() = sp.getBoolean("show_all_apps", true)
         set(v) = sp.edit().putBoolean("show_all_apps", v).apply()
 
+    /** 广告卫士：自动跳过第三方应用的开屏广告 */
+    var adSkipEnabled: Boolean
+        get() = sp.getBoolean("ad_skip_enabled", true)
+        set(v) = sp.edit().putBoolean("ad_skip_enabled", v).apply()
+
     /** 联系人每行列数（1=特大/每屏2个 2=大/每屏4-6个 3=中/每屏6个+） */
     var contactColumns: Int
         get() = sp.getInt("contact_columns", 2)

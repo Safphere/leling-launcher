@@ -15,8 +15,8 @@
     <string name="save">保存</string>
     <string name="delete">删除</string>
     <string name="calling_fmt">正在呼叫 %1$s</string>
-    <string name="a11y_service_label">乐龄桌面（用于一键重启）</string>
-    <string name="a11y_service_desc">开启后，「一键重启」可以直接弹出手机电源菜单，方便老人按提示重启。本服务不读取屏幕内容、不收集任何信息。</string>
+    <string name="a11y_service_label">乐龄桌面（一键重启 · 广告卫士）</string>
+    <string name="a11y_service_desc">开启后支持：①「一键重启」直接弹出电源菜单；②自动跳过第三方应用的开屏广告（仅替您点击「跳过」按钮）。本服务只在内存中短暂定位按钮，不收集、不上传任何信息。</string>
     <string name="ai_title">问问小乐</string>
     <string name="ai_hint">按住下面的按钮说话</string>
     <string name="ai_listening">正在听您说话…</string>

@@ -112,6 +112,21 @@
                 style="@style/SettingRow"
                 android:text="检测时间：09:00" />
 
+            <!-- ===== 去广告（广告卫士） ===== -->
+            <TextView style="@style/SecHeader" android:text="去广告（广告卫士）" />
+            <LinearLayout style="@style/RowWrap">
+                <TextView
+                    style="@style/RowText"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="自动跳过开屏广告（需开启无障碍）" />
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swAdSkip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="64dp" />
+            </LinearLayout>
+
             <!-- ===== 流量智能管理 ===== -->
             <TextView style="@style/SecHeader" android:text="流量智能管理" />
             <LinearLayout style="@style/RowWrap">
